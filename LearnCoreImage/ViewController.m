@@ -10,6 +10,10 @@
 #import <AVKit/AVKit.h>
 #import "CIColorInvert.h"
 
+/*
+ https://developer.apple.com/library/archive/documentation/GraphicsImaging/Reference/CoreImageFilterReference/index.html#//apple_ref/doc/uid/TP30000136-SW29
+ */
+
 static void RGBtoHSV( float r, float g, float b, float *h, float *s, float *v )
 {
     float min, max, delta;
@@ -127,7 +131,7 @@ static void HSVtoRGB2(float hsv[], float rgb[])
     [self.view addSubview:filteredImgView];
 
     {
-//        filteredImgView.image = [self filterWithImage:img];
+        filteredImgView.image = [self filterWithImage:img];
     }
     {
 //        filteredImgView.image = [self autoEnhancementFilters:img];
@@ -154,7 +158,7 @@ static void HSVtoRGB2(float hsv[], float rgb[])
 //                                          }];
     }
     {
-        filteredImgView.image = [self oldFilmFilterRecipe:img];
+//        filteredImgView.image = [self oldFilmFilterRecipe:img];
     }
 }
 
@@ -166,20 +170,37 @@ static void HSVtoRGB2(float hsv[], float rgb[])
 #pragma mark - Filters
 
 - (UIImage *)filterWithImage:(UIImage *)image {
+    // 黑白
     CIImage *inputciImage = [[CIImage alloc] initWithImage:image];
     
-    CIFilter *filter = [CIFilter filterWithName:@"CISepiaTone"];
-    [filter setValue:@(0.8) forKey:kCIInputIntensityKey];
+    CIFilter *filter = [CIFilter filterWithName:@"CIFalseColor"];
     [filter setValue:inputciImage forKey:kCIInputImageKey];
+    [filter setValue:[CIColor colorWithCGColor:[UIColor blackColor].CGColor] forKey:@"inputColor0"];
+    [filter setValue:[CIColor colorWithCGColor:[UIColor whiteColor].CGColor] forKey:@"inputColor1"];
     
     CIImage *outputciImg = filter.outputImage;
-//    UIImage *img = [UIImage imageWithCIImage:outputciImg];
+    //    UIImage *img = [UIImage imageWithCIImage:outputciImg];
     
     CIContext *context = [CIContext contextWithOptions:nil];
     CGImageRef imgRef = [context createCGImage:outputciImg fromRect:outputciImg.extent];
     UIImage *img = [UIImage imageWithCGImage:imgRef];
     CGImageRelease(imgRef);
     
+    
+//    CIImage *inputciImage = [[CIImage alloc] initWithImage:image];
+//
+//    CIFilter *filter = [CIFilter filterWithName:@"CISepiaTone"];
+//    [filter setValue:@(0.8) forKey:kCIInputIntensityKey];
+//    [filter setValue:inputciImage forKey:kCIInputImageKey];
+//
+//    CIImage *outputciImg = filter.outputImage;
+////    UIImage *img = [UIImage imageWithCIImage:outputciImg];
+//
+//    CIContext *context = [CIContext contextWithOptions:nil];
+//    CGImageRef imgRef = [context createCGImage:outputciImg fromRect:outputciImg.extent];
+//    UIImage *img = [UIImage imageWithCGImage:imgRef];
+//    CGImageRelease(imgRef);
+//
     return img;
 }
 
